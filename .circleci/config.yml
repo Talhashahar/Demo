@@ -14,7 +14,7 @@ workflows:
     # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows 
     jobs:
       - build-and-test
-      - docker-build-push-dude
+      - build_and_push_image
 
 
 jobs:
@@ -42,18 +42,31 @@ jobs:
           # This assumes pytest is installed via the install-package step above
           command: pytest
 
-  docker-build-push-dude:
-    environment:
-      IMAGE_NAME: demo:<<pipeline.git.branch>>
-      IMAGE_REMOTE_NAME: public.ecr.aws/y7e1l5y0/demo:<<pipeline.git.branch>>
-    docker:
-      - image: circleci/buildpack-deps:stretch
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: |
-            docker build -t $IMAGE_NAME .
-            docker tag $IMAGE_NAME IMAGE_REMOTE_NAME
-            docker push IMAGE_REMOTE_NAME
+  build_and_push_image:
+    - aws-ecr/build-and-push-image:
+          aws-access-key-id: AKIATELXLOFIF42HDMXO
+          aws-secret-access-key: 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
+          create-repo: false
+          dockerfile: Dockerfile
+          no-output-timeout: 20m
+          path: .
+          region: eu-central-1
+          repo: demo
+          skip-when-tags-exist: false
+          tag: <<pipeline.git.branch>>
+
+  # docker-build-push-dude:
+  #   environment:
+  #     IMAGE_NAME: demo:<<pipeline.git.branch>>
+  #     IMAGE_REMOTE_NAME: public.ecr.aws/y7e1l5y0/demo:<<pipeline.git.branch>>
+  #   docker:
+  #     - image: circleci/buildpack-deps:stretch
+  #   steps:
+  #     - checkout
+  #     - setup_remote_docker
+  #     - run:
+  #         name: Build Docker image
+  #         command: |
+  #           docker build -t $IMAGE_NAME .
+  #           docker tag $IMAGE_NAME IMAGE_REMOTE_NAME
+  #           docker push IMAGE_REMOTE_NAME
