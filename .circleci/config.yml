@@ -15,13 +15,13 @@ workflows:
     jobs:
       - build-and-test
       - aws-ecr/build-and-push-image:
-          aws-access-key-id: $AWS_KEY
-          aws-secret-access-key: $AWS_SECRET
+          aws-access-key-id: AWS_KEY
+          aws-secret-access-key: AWS_SECRET
           create-repo: false
           dockerfile: Dockerfile
           no-output-timeout: 20m
           path: .
-          region: $AWS_REGION
+          region: AWS_REGION
           repo: demo
           skip-when-tags-exist: false
           tag: "main"
