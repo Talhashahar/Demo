@@ -13,7 +13,7 @@ workflows:
     # For more details on extending your workflow, see the configuration docs: https://circleci.com/docs/2.0/configuration-reference/#workflows 
     jobs:
       - build-and-test
-      - build-docker
+      - docker-build-push-dude
 
 
 jobs:
@@ -41,9 +41,10 @@ jobs:
           # This assumes pytest is installed via the install-package step above
           command: pytest
 
-  build-docker:
+  docker-build-push-dude:
     environment:
       IMAGE_NAME: demo:<<pipeline.git.branch>>
+      IMAGE_REMOTE_NAME: public.ecr.aws/y7e1l5y0/demo:<<pipeline.git.branch>>
     docker:
       - image: circleci/buildpack-deps:stretch
     steps:
@@ -51,4 +52,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build Docker image
-          command: docker build -t $IMAGE_NAME .
+          command: |
+		docker build -t $IMAGE_NAME .
+	  	docker tag $IMAGE_NAME IMAGE_REMOTE_NAME
+		docker push IMAGE_REMOTE_NAME
