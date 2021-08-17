@@ -53,7 +53,7 @@ jobs:
           region: eu-central-1
           repo: demo
           skip-when-tags-exist: false
-          tag: << pipeline.git.branch >>
+          tag: main
 
   # docker-build-push-dude:
   #   environment:
